@@ -22,3 +22,4 @@
 2026-06-08 | azure/swa | swa-cli-binary-direct-invocation-windows | When SWA CLI npm wrapper exits code 1 on Windows, invoke StaticSitesClient.exe directly with --app --apiToken --skipAppBuild true
 2026-06-08 | azure/networking | azure-sql-mi-fqdn-private-peered-vnet | Default Azure DNS resolves SQL MI VNet-local FQDN to private IP across peered VNets without a private DNS zone (validated in production)
 2026-06-08 | devops/shell | bash-dotenv-special-char-password | Sourcing .env in bash silently corrupts special-char passwords (!,$,*); parse the file line-by-line in the test setup instead
+2026-06-08 | patterns/reconciler | reconciler-detector-time-ordered-store-duplicate | Reconciler+detector both writing same logical key with different timestamps creates invisible duplicates; index must group all rows per key
