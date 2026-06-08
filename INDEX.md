@@ -18,3 +18,7 @@
 2026-06-02 | frontend/react | react-postmessage-useeffect-race | postMessage events arrive before useEffect registers; buffer at module-eval time
 2026-06-02 | frontend/auth | postmessage-wildcard-origin-not-auto-match | Array.includes("*") does not match origins; must check includes("*") explicitly
 2026-05-31 | sdp/api | sdp-v3-fields-required-whitelist | SDP v3 list view omits fields unless whitelisted in list_info.fields_required; approver causes 400
+2026-06-08 | azure/swa | swa-routes-json-deprecated-silently-ignored | SWA CLI >= 2.x silently ignores routes.json (deprecated); use staticwebapp.config.json with explicit per-route rewrites + navigationFallback
+2026-06-08 | azure/swa | swa-cli-binary-direct-invocation-windows | When SWA CLI npm wrapper exits code 1 on Windows, invoke StaticSitesClient.exe directly with --app --apiToken --skipAppBuild true
+2026-06-08 | azure/networking | azure-sql-mi-fqdn-private-peered-vnet | Default Azure DNS resolves SQL MI VNet-local FQDN to private IP across peered VNets without a private DNS zone (validated in production)
+2026-06-08 | devops/shell | bash-dotenv-special-char-password | Sourcing .env in bash silently corrupts special-char passwords (!,$,*); parse the file line-by-line in the test setup instead
