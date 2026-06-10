@@ -71,3 +71,28 @@ fix: In global-setup.ts, construct all localStorage keys manually from ROPC toke
   - msal.token.keys.<clientId> (JSON {accessToken:[...], idToken:[...], refreshToken:[]})
   - msal.<clientId>.active-account (= oid)
   - msal.<clientId>.active-account-filters (JSON {homeAccountId, localAccountId, tenantId})
+
+## [direct-sql-delegation-spa-azure-sql]
+created: 2026-06-10
+tags: azure, sql, entra, msal, delegation, obo
+symptom/context: SPA uses MSAL to acquire a token for a backend app, which OBO-swaps
+  it for a SQL-scoped token (https://database.windows.net). The backend needs a
+  confidential client, client secret, and separate app registration.
+finding: The SPA can request https://database.windows.net/user_impersonation directly
+  from Entra — no OBO exchange needed. Grant the delegated permission on the frontend
+  app, admin-consent it, and set the MSAL loginRequest scope to the SQL scope.
+  Token audience on v2 tokens is "https://database.windows.net" (no trailing slash).
+  Works identically for Azure SQL Database and Azure SQL Managed Instance — both covered
+  by the same Entra service principal ("Azure SQL Database",
+  object ID 022907d3-0f1b-48f7-badc-1ba6abab6d66).
+  Backend: validate incoming token (accept "https://database.windows.net" as aud),
+  confirm scp contains "user_impersonation", then pass raw JWT to pyodbc via
+  UTF-16-LE + struct.pack + SQL_COPT_SS_ACCESS_TOKEN=1256 — no ConfidentialClientApplication,
+  no AZURE_CLIENT_SECRET, no OBO exchange.
+  Security note: SQL-scoped token is now in the browser MSAL localStorage cache
+  (vs OBO where the backend held it). Mitigate with short token TTL, HTTPS, CSP headers.
+recommendation: Prefer direct delegation over OBO for SPA→Azure SQL — eliminates the
+  confidential client, client secret rotation, and OBO exchange latency. Drop the
+  backend app registration entirely once migration is confirmed.
+  See also: [[azure-sql-obo-utf16le-token]] (pyodbc encoding still required),
+  [[entra-v1-v2-token-audience-issuer]] (accept both aud forms in validator)

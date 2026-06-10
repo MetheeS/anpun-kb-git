@@ -28,3 +28,6 @@
 2026-06-10 | azure/sdk | azure-table-list-entities-no-query-filter-kwarg | list_entities() passes unknown kwargs to HTTP transport; use query_entities() for parameterized filtered scans
 2026-06-10 | azure/sdk | azure-table-upsert-on-nonexistent-table | Azure Table Storage does not auto-create tables; catch ResourceNotFoundError on first write, create_table(), then retry
 2026-06-10 | azure/swa | swa-rolessource-must-be-in-auth-block | rolesSource must be nested inside the auth block in staticwebapp.config.json; top-level placement is silently ignored
+2026-06-10 | azure/auth | direct-sql-delegation-spa-azure-sql | SPA can request https://database.windows.net/user_impersonation directly; no OBO or confidential client needed; works for SQL DB and SQL MI
+2026-06-10 | frontend/fetch | fastapi-streaming-response-client-timeout | FastAPI StreamingResponse holds connection open; await res.json() blocks forever on stall; fix with AbortController timeout
+2026-06-10 | devops/cicd | github-actions-swa-oidc-not-supported | azure/static-web-apps-deploy requires deployment token; OIDC works for ACA/ACR via azure/login@v2 but not SWA
