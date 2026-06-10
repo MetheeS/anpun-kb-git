@@ -23,3 +23,8 @@
 2026-06-08 | azure/networking | azure-sql-mi-fqdn-private-peered-vnet | Default Azure DNS resolves SQL MI VNet-local FQDN to private IP across peered VNets without a private DNS zone (validated in production)
 2026-06-08 | devops/shell | bash-dotenv-special-char-password | Sourcing .env in bash silently corrupts special-char passwords (!,$,*); parse the file line-by-line in the test setup instead
 2026-06-08 | patterns/reconciler | reconciler-detector-time-ordered-store-duplicate | Reconciler+detector both writing same logical key with different timestamps creates invisible duplicates; index must group all rows per key
+2026-06-10 | azure/openai | azure-openai-regional-endpoint-no-token-auth | Regional OpenAI endpoints reject Entra ID token auth; only custom-subdomain endpoints support managed identity
+2026-06-10 | azure/openai | openai-sdk-gpt-image-1-min-version | gpt-image-1 requires openai SDK >= 1.74.0; older versions lack output_format param and reject quality="low"
+2026-06-10 | azure/sdk | azure-table-list-entities-no-query-filter-kwarg | list_entities() passes unknown kwargs to HTTP transport; use query_entities() for parameterized filtered scans
+2026-06-10 | azure/sdk | azure-table-upsert-on-nonexistent-table | Azure Table Storage does not auto-create tables; catch ResourceNotFoundError on first write, create_table(), then retry
+2026-06-10 | azure/swa | swa-rolessource-must-be-in-auth-block | rolesSource must be nested inside the auth block in staticwebapp.config.json; top-level placement is silently ignored

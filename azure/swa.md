@@ -63,3 +63,12 @@ fix: Invoke StaticSitesClient.exe directly. The binary accepts different
   a DIRECTORY path (not a file path); the binary appends the filename itself.
   Flags that do NOT work: --rootPath, --deploymentToken, --outputLocation
   (when used without --app).
+
+## [swa-rolessource-must-be-in-auth-block]
+created: 2026-06-10
+tags: azure-swa, roles, authentication, staticwebapp.config.json
+symptom/context: Custom roles endpoint is configured but SWA never calls it — users always get default roles only, so role-gated UI sections never render even though the backend /get-roles endpoint and all frontend role checks are correctly implemented.
+root-cause: "rolesSource" must be nested INSIDE the "auth" block in staticwebapp.config.json, not at the top level. Top-level placement is silently ignored (or causes a schema validation error with SWA CLI >= 2.x).
+fix: Move "rolesSource": "/api/get-roles" to be a sibling of "identityProviders" inside the "auth" object. Redeploy frontend. Correct structure:
+  { "auth": { "rolesSource": "/api/get-roles", "identityProviders": { ... } } }
+failed-attempts: Placing rolesSource at the top level of staticwebapp.config.json — silently ignored by the SWA runtime.
