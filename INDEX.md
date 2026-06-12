@@ -31,3 +31,8 @@
 2026-06-10 | azure/auth | direct-sql-delegation-spa-azure-sql | SPA can request https://database.windows.net/user_impersonation directly; no OBO or confidential client needed; works for SQL DB and SQL MI
 2026-06-10 | frontend/fetch | fastapi-streaming-response-client-timeout | FastAPI StreamingResponse holds connection open; await res.json() blocks forever on stall; fix with AbortController timeout
 2026-06-10 | devops/cicd | github-actions-swa-oidc-not-supported | azure/static-web-apps-deploy requires deployment token; OIDC works for ACA/ACR via azure/login@v2 but not SWA
+2026-06-12 | azure/swa | swa-staticwebapp-config-must-be-in-vite-public | Vite only copies public/ to dist/; staticwebapp.config.json in project root never reaches the SWA deployment
+2026-06-12 | testing/playwright | playwright-route-last-registered-wins | page.route() handlers fire last-registered-first; register catch-alls before specific mocks
+2026-06-12 | testing/playwright | playwright-getbytext-descendant-text-concat | getByText(regex) matches concatenated descendant text, not just the element's own text — tighten regex to phrase-level
+2026-06-12 | azure/sdk | azure-table-no-array-membership-filter | Azure Table OData has no array-membership predicate; filter array fields in-memory after fetch
+2026-06-12 | frontend/fetch | axios-formdata-array-detail-object-object | FastAPI 422 detail is an array; String([{...}]) = "[object Object]" — handle in interceptor + clear Content-Type on FormData

@@ -72,3 +72,21 @@ root-cause: "rolesSource" must be nested INSIDE the "auth" block in staticwebapp
 fix: Move "rolesSource": "/api/get-roles" to be a sibling of "identityProviders" inside the "auth" object. Redeploy frontend. Correct structure:
   { "auth": { "rolesSource": "/api/get-roles", "identityProviders": { ... } } }
 failed-attempts: Placing rolesSource at the top level of staticwebapp.config.json — silently ignored by the SWA runtime.
+
+## [swa-staticwebapp-config-must-be-in-vite-public]
+created: 2026-06-12
+tags: azure-swa, vite, staticwebapp.config.json, deployment, config
+symptom/context: staticwebapp.config.json placed in the project root is
+  present in the repo but absent from the deployed dist/ — SWA has no
+  routing/auth config at runtime (rolesSource ignored, consent loop,
+  role-gated UI never renders).
+root-cause: Vite copies only the contents of the public/ directory into
+  dist/ verbatim. Files in the project root (or src/) are NOT included
+  in the build output unless explicitly referenced by an import.
+  SWA CLI picks up staticwebapp.config.json from the --app directory
+  (dist/), so if the file was never copied there, no config is deployed.
+fix: Move staticwebapp.config.json to public/staticwebapp.config.json.
+  Vite copies it to dist/ automatically. Re-run npm run build and
+  redeploy. Verify the file appears in dist/ before deploying.
+failed-attempts: Placing the file in the project root alongside
+  package.json — file exists in repo but is absent from dist/.

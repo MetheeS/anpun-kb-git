@@ -29,3 +29,23 @@ symptom/context: First upsert_entity() call on a net-new table (never created) r
 root-cause: Azure Table Storage does not auto-create tables on upsert. The table must exist before any entity operation. On a fresh deployment the table is absent.
 fix: Wrap the first write in try/except ResourceNotFoundError, call create_table() (or TableServiceClient.create_table_if_not_exists()), then retry. For reads (list, query), catch ResourceNotFoundError and return []. Pattern applies to any table that may not exist on first deploy.
 failed-attempts: None.
+
+## [azure-table-no-array-membership-filter]
+created: 2026-06-12
+tags: azure-tables, query, filter, array, odata
+symptom/context: Need to query Azure Table Storage for rows where a
+  stored JSON array field contains a specific value (e.g. visibleSites
+  contains "site-a"). OData filter expressions on array fields either
+  error or return no results.
+root-cause: Azure Table Storage OData supports only flat-value comparisons
+  (eq, ne, lt, gt, le, ge) on primitive entity properties. There is no
+  array-membership predicate (IN, contains, any()). JSON arrays stored
+  as strings cannot be queried by content — the filter sees only the raw
+  serialized string.
+fix: Fetch all candidate rows and filter in-memory after deserialization.
+  If the dataset is large, partition by owner first (reducing rows fetched)
+  then apply in-memory membership check.
+recommendation: Do not rely on server-side filtering for array-valued
+  properties in Azure Table Storage. Design the schema to support
+  flat-value filters (e.g. one row per site-item pair) if server-side
+  fan-out filtering is required at scale.

@@ -28,3 +28,31 @@ fix: Wrap the fetch in an AbortController and set a timeout matching the server-
 recommendation: Any fetch to a streaming endpoint must have an AbortController timeout.
   Match it to the infrastructure timeout cap (ACA: 240s, ALB: varies). Never rely on
   the browser to surface a stalled stream as an error — it won't.
+
+## [axios-formdata-array-detail-object-object]
+created: 2026-06-12
+tags: axios, formdata, fastapi, error-handling, interceptor
+symptom/context: File upload via axios FormData POST fails and the error
+  displayed to the user is literally "[object Object]" — no useful message.
+root-cause: Two compounding bugs:
+  (1) FastAPI validation errors (422) return detail as an array of objects
+      [{loc, msg, type}]. An axios response interceptor doing
+      String(error.response?.data?.detail) on an array produces "[object Object]".
+  (2) An axios instance with a default Content-Type: application/json header
+      may send that header on FormData POSTs, causing FastAPI to reject the
+      multipart body with a 422 (triggering bug 1).
+fix:
+  In the response interceptor, handle array detail:
+    const raw = error.response?.data?.detail;
+    const message = Array.isArray(raw)
+      ? raw.map((d) => d.msg ?? JSON.stringify(d)).join("; ")
+      : (raw != null ? String(raw) : null) ?? error.message ?? "Unknown error";
+    return Promise.reject(new Error(message));
+
+  On FormData POST requests, clear the Content-Type so the browser sets
+  multipart/form-data with the correct boundary:
+    apiClient.post("/upload", formData, { headers: { "Content-Type": undefined } });
+recommendation: Any axios client that defaults Content-Type: application/json
+  must pass { headers: { "Content-Type": undefined } } on FormData uploads.
+  Any FastAPI + axios integration must handle array-shaped detail in the
+  error interceptor.
