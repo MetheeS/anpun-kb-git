@@ -36,3 +36,7 @@
 2026-06-12 | testing/playwright | playwright-getbytext-descendant-text-concat | getByText(regex) matches concatenated descendant text, not just the element's own text — tighten regex to phrase-level
 2026-06-12 | azure/sdk | azure-table-no-array-membership-filter | Azure Table OData has no array-membership predicate; filter array fields in-memory after fetch
 2026-06-12 | frontend/fetch | axios-formdata-array-detail-object-object | FastAPI 422 detail is an array; String([{...}]) = "[object Object]" — handle in interceptor + clear Content-Type on FormData
+2026-06-17 | sap/webdynpro | sap-webdynpro-playwright-locator-patterns | Webdynpro dynamic IDs (WD01/WD021E) are unstable; use role/label/text locators; MSAL uses sessionStorage (not captured by storageState); SAP uses <label f=> not <label for=>
+2026-06-18 | sap/webdynpro | sap-webdynpro-file-input-hidden | SAP FileUploadElement hides input[type=file] with display:none; locator.count() returns 0; use expect_file_chooser() context manager instead
+2026-06-19 | sap/nwbc | sap-nwbc-window-open-popup-async | SAP NWBC fires window.open() async after networkidle; intercept via context.on("page") and switch at the start of every DSL step
+2026-06-19 | sap/openui5 | sap-openui5-tab-role | SAP OpenUI5 tab bars use role="tab" not role="button" or role="link"; add getByRole("tab") getter before text fallback
