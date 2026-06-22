@@ -96,3 +96,21 @@ recommendation: Prefer direct delegation over OBO for SPA→Azure SQL — elimin
   backend app registration entirely once migration is confirmed.
   See also: [[azure-sql-obo-utf16le-token]] (pyodbc encoding still required),
   [[entra-v1-v2-token-audience-issuer]] (accept both aud forms in validator)
+
+## [msal-cross-origin-iframe-ssosilent-loginhint]
+created: 2026-06-22
+tags: msal, entra, iframe, sso, ssosilent, third-party-cookies
+symptom/context: A SPA (e.g. an Azure SWA) embedded as a CROSS-ORIGIN iframe
+  inside a parent app on the same Entra tenant shows a login page; MSAL silent
+  auth fails inside the iframe even though the parent user is signed in.
+root-cause: Modern browsers block third-party cookies, so MSAL acquireTokenSilent
+  (which relies on a hidden-iframe/cookie path on the app origin) is unreliable in
+  a cross-origin iframe — the embedded app sees no session. A postMessage token
+  relay works but is fragile (origin checks, token persistence, reload races).
+fix: Have the parent pass the signed-in user's email as a URL param
+  (e.g. ?loginHint=user@tenant). The embedded app calls
+  instance.ssoSilent({ loginHint, scopes }), which acquires a token from the
+  SHARED Entra SSO session cookie on login.microsoftonline.com (a first-party
+  cookie on the IdP origin, NOT a third-party cookie on the app origin) — no
+  prompt, no relay. Fall back to interactive login when loginHint is absent
+  (standalone use unchanged).

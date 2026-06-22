@@ -40,3 +40,10 @@
 2026-06-18 | sap/webdynpro | sap-webdynpro-file-input-hidden | SAP FileUploadElement hides input[type=file] with display:none; locator.count() returns 0; use expect_file_chooser() context manager instead
 2026-06-19 | sap/nwbc | sap-nwbc-window-open-popup-async | SAP NWBC fires window.open() async after networkidle; intercept via context.on("page") and switch at the start of every DSL step
 2026-06-19 | sap/openui5 | sap-openui5-tab-role | SAP OpenUI5 tab bars use role="tab" not role="button" or role="link"; add getByRole("tab") getter before text fallback
+2026-06-22 | frontend/search | fuzzy-search-whole-text-overmatch | Fuzzy/subsequence search over whole multi-word text over-matches short queries; scope matching to word tokens + require length>=4 for fuzzy expansion
+2026-06-22 | azure/aca | aca-job-stale-image-not-updated-by-containerapp-update | `az containerapp update` updates the APP only; ACA Jobs keep the old image — CI must `az containerapp job update` each job separately
+2026-06-22 | azure/communication | acs-email-contenttype-and-verified-sender | ACS email: sender domain must be LINKED to the resource (DomainNotLinked), and set the body via GA SDK content fields not the preview attachmentType
+2026-06-22 | azure/aca | aca-job-replica-timeout-no-partial-progress | ACA Jobs have a hard replicaTimeout and no checkpoint; fingerprint change-detection with cheap metadata and do expensive work only on the changed set
+2026-06-22 | azure/storage | public-blob-no-cache-control-stale-frontend | Public blobs fetched by a browser go stale via heuristic caching; write Content-Type + Cache-Control=no-cache for ETag revalidation
+2026-06-22 | patterns/cache | fingerprint-cache-traps-failed-result | A failed computation whose fingerprint is cached as "done" never retries after the cause is fixed; cache only successes or invalidate failed keys
+2026-06-22 | azure/auth | msal-cross-origin-iframe-ssosilent-loginhint | Cross-origin iframe MSAL acquireTokenSilent fails (3rd-party cookies); use ssoSilent({loginHint}) with the parent passing the user email via URL param

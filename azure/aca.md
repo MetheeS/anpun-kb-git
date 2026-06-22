@@ -48,3 +48,33 @@ fix: For caches that must be fleet-wide (session state, rate-limit counters): us
   document the cold-first-request cost per replica, and do NOT assert strict warm/cold
   speedup ratios in tests. Assert an absolute improvement instead (e.g. warm < cold
   - N seconds) or skip with INFRA marker if load-balanced to a different replica.
+
+## [aca-job-stale-image-not-updated-by-containerapp-update]
+created: 2026-06-22
+tags: aca, container-apps-jobs, cicd, deploy, stale-image
+symptom/context: A code fix was built and deployed (CI green, the container APP
+  updated to the new image), but a scheduled ACA JOB kept running the OLD logic —
+  the job failure persisted after the "fix" shipped.
+root-cause: `az containerapp update` (and CI pipelines that only run it) update
+  the container APP only. ACA JOBS (Microsoft.App/jobs) are SEPARATE resources
+  that keep their own pinned image; an app update does not touch them.
+fix: CI must update each job explicitly — `az containerapp job update --image
+  <same image:tag>` — as its own deploy step, for every ACA Job that shares the
+  app image. Add a dedicated "Deploy ACA Jobs" step to the pipeline so the jobs
+  and the app ship together.
+
+## [aca-job-replica-timeout-no-partial-progress]
+created: 2026-06-22
+tags: aca, container-apps-jobs, timeout, change-detection, performance
+symptom/context: A nightly ACA Job is killed at replicaTimeout (e.g. 1800s); its
+  output is never written, so every run restarts from scratch and dies at the same
+  wall — a silent stall with frozen output.
+root-cause: ACA Jobs have a HARD replicaTimeout and NO partial-progress
+  checkpoint. A job whose total work exceeds the timeout never completes. In this
+  case it ran expensive per-column sampling on ALL entities just to compute
+  change-detection fingerprints.
+fix: For change-detection, fingerprint with CHEAP metadata only (e.g. column
+  name+type via INFORMATION_SCHEMA) and run expensive work (sampling/LLM) ONLY on
+  the changed set. Seed the fingerprint store from existing output to avoid a
+  first-run full rebuild. If work can still exceed the timeout, persist progress
+  incrementally so reruns make forward progress.
