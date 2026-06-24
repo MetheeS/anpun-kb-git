@@ -47,3 +47,6 @@
 2026-06-22 | azure/storage | public-blob-no-cache-control-stale-frontend | Public blobs fetched by a browser go stale via heuristic caching; write Content-Type + Cache-Control=no-cache for ETag revalidation
 2026-06-22 | patterns/cache | fingerprint-cache-traps-failed-result | A failed computation whose fingerprint is cached as "done" never retries after the cause is fixed; cache only successes or invalidate failed keys
 2026-06-22 | azure/auth | msal-cross-origin-iframe-ssosilent-loginhint | Cross-origin iframe MSAL acquireTokenSilent fails (3rd-party cookies); use ssoSilent({loginHint}) with the parent passing the user email via URL param
+2026-06-24 | azure/frontdoor | azure-frontdoor-origin-reachability-not-validated | AFD Standard does not validate origin reachability at provision; bad host still provisions Active, not Failed
+2026-06-24 | claude-code/design-mcp | claude-design-mcp-asset-staging | claude_design MCP callable only by main session; decode binaries from persisted tool-result, never hand-transcribe base64; fallback fonts if unstageable
+2026-06-24 | testing/playwright | playwright-storagestate-not-reapplied-on-navigation | storageState applied once per context, not per goto; re-seed token via addInitScript for signed-out→signed-in re-nav tests

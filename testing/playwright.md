@@ -38,3 +38,10 @@ fix: Tighten the regex to a phrase that only appears in the target
 recommendation: Treat getByText as a full-subtree text search, not a
   leaf-node match. When testing for a specific UI badge or label,
   use a phrase-level regex or combine with a role/test-id selector.
+
+## [playwright-storagestate-not-reapplied-on-navigation]
+created: 2026-06-24
+tags: playwright, auth, storagestate, e2e
+symptom: E2E injects an auth token into localStorage (storageState/global-setup), removes it to assert a signed-out view, then navigates expecting signed-in again — the second navigation stays signed-out.
+root-cause: Playwright applies storageState once per browser CONTEXT (at creation), not on every page.goto. Removing the token in-page and re-navigating does not re-apply it.
+fix: Re-seed the token in the run harness for the re-nav step — page.addInitScript to set the localStorage key on next load, or set it explicitly before the second goto. Harness fix; no assertion change.
